@@ -13,6 +13,12 @@ type Task struct {
 	Completed bool   `json:"completed"`
 }
 
+var (
+	add  = flag.String("add", "", "Add a new task")
+	view = flag.Bool("view", false, "View all tasks")
+	del  = flag.Int("delete", 0, "Delete a task by ID")
+)
+
 const fileName = "todo.json"
 
 func WriteTasks(tasks []Task) error {
@@ -41,21 +47,15 @@ func ReadTasks() ([]Task, error) {
 }
 
 func main() {
-	tasks := []Task{
-		{ID: 1, Task: "Buy groceries", Completed: false},
-		{ID: 2, Task: "Clean the house", Completed: true},
-	}
+	flag.Parse()
 
-	err := WriteTasks(tasks)
-	if err != nil {
-		fmt.Println("Error writing tasks: ", err)
-		return
+	if *add != "" {
+		addTask(*add)
+	} else if *view {
+		viewTasks()
+	} else if *del != 0 {
+		deleteTask(*del)
+	} else {
+		fmt.Println("Please provide a valid command: -add, -view, -delete")
 	}
-
-	readTasks, err := ReadTasks()
-	if err != nil {
-		fmt.Println("Error in reading tasks: ", err)
-	}
-
-	fmt.Println("Tasks from file: ", readTasks)
 }

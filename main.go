@@ -14,9 +14,10 @@ type Task struct {
 }
 
 var (
-	add  = flag.String("add", "", "Add a new task")
-	view = flag.Bool("view", false, "View all tasks")
-	del  = flag.Int("delete", 0, "Delete a task by ID")
+	add      = flag.String("add", "", "Add a new task")
+	view     = flag.Bool("view", false, "View all tasks")
+	del      = flag.Int("delete", 0, "Delete a task by ID")
+	complete = flag.Int("complete", 0, "Mask a task as completed by ID")
 )
 
 const fileName = "todo.json"
@@ -126,6 +127,35 @@ func deleteTask(id int) {
 	fmt.Printf("Deleted task with ID: %d.\n", id)
 }
 
+func completeTask(id int) {
+	tasks, err := ReadTasks()
+	if err != nil {
+		fmt.Println("Error reading tasks: ", err)
+		return
+	}
+
+	found := false
+	for i, task := range tasks {
+		if task.ID == id {
+			tasks[i].Completed = true
+			found = true
+			break
+		}
+	}
+	if !found {
+		fmt.Printf("Task with ID: %d, not exists.\n", id)
+		return
+	}
+
+	err = WriteTasks(tasks)
+	if err != nil {
+		fmt.Println("Error in writing tasks: ", err)
+		return
+	}
+
+	fmt.Printf("Marked task with ID: %d as completed.\n", id)
+}
+
 func main() {
 	flag.Parse()
 
@@ -135,7 +165,9 @@ func main() {
 		viewTasks()
 	} else if *del != 0 {
 		deleteTask(*del)
+	} else if *complete != 0 {
+		completeTask(*complete)
 	} else {
-		fmt.Println("Please provide a valid command: -add, -view, -delete")
+		fmt.Println("Please provide a valid command: -add, -view, -delete, -complete")
 	}
 }

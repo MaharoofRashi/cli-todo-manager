@@ -74,6 +74,28 @@ func addTask(task string) {
 	fmt.Printf("Added task: %s.\n", task)
 }
 
+func viewTasks() {
+	tasks, err := ReadTasks()
+	if err != nil {
+		fmt.Println("Error reading tasks: ", err)
+		return
+	}
+
+	if len(tasks) == 0 {
+		fmt.Println("No tasks found.")
+		return
+	}
+
+	fmt.Println("Your tasks: ")
+	for _, task := range tasks {
+		status := " "
+		if task.Completed {
+			status = "✔"
+		}
+		fmt.Printf("[%s] %d: %s\n", status, task.ID, task.Task)
+	}
+}
+
 func main() {
 	flag.Parse()
 
@@ -82,7 +104,7 @@ func main() {
 	} else if *view {
 		viewTasks()
 	} else if *del != 0 {
-		deleteTask(*del)
+		//deleteTask(*del)
 	} else {
 		fmt.Println("Please provide a valid command: -add, -view, -delete")
 	}

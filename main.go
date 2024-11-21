@@ -96,6 +96,36 @@ func viewTasks() {
 	}
 }
 
+func deleteTask(id int) {
+	tasks, err := ReadTasks()
+	if err != nil {
+		fmt.Println("Error in reading tasks: ", err)
+		return
+	}
+
+	found := false
+	newTasks := []Task{}
+	for _, task := range tasks {
+		if task.ID == id {
+			found = true
+		} else {
+			newTasks = append(newTasks, task)
+		}
+	}
+
+	if !found {
+		fmt.Printf("Task with ID: %d, not found.\n", id)
+		return
+	}
+
+	err = WriteTasks(newTasks)
+	if err != nil {
+		fmt.Println("Error writing tasks: ", err)
+		return
+	}
+	fmt.Printf("Deleted task with ID: %d.\n", id)
+}
+
 func main() {
 	flag.Parse()
 
@@ -104,7 +134,7 @@ func main() {
 	} else if *view {
 		viewTasks()
 	} else if *del != 0 {
-		//deleteTask(*del)
+		deleteTask(*del)
 	} else {
 		fmt.Println("Please provide a valid command: -add, -view, -delete")
 	}

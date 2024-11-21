@@ -46,6 +46,34 @@ func ReadTasks() ([]Task, error) {
 	return tasks, err
 }
 
+func addTask(task string) {
+	tasks, err := ReadTasks()
+	if err != nil {
+		fmt.Println("Error reading tasks: ", err)
+		return
+	}
+
+	newID := 1
+	if len(tasks) > 0 {
+		newID = tasks[len(tasks)-1].ID + 1
+	}
+
+	newTask := Task{
+		ID:        newID,
+		Task:      task,
+		Completed: false,
+	}
+	tasks = append(tasks, newTask)
+
+	err = WriteTasks(tasks)
+	if err != nil {
+		fmt.Println("Error writing tasks: ", err)
+		return
+	}
+
+	fmt.Printf("Added task: %s.\n", task)
+}
+
 func main() {
 	flag.Parse()
 
